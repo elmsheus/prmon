@@ -42,18 +42,18 @@ void cpumon::update_stats(const std::vector<pid_t>& pids) {
 }
 
 // Return the summed counters
-std::map<std::string, unsigned long long> const cpumon::get_text_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const cpumon::get_text_stats() {
   return cpu_stats;
 }
 
 // Same for JSON
-std::map<std::string, unsigned long long> const cpumon::get_json_total_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const cpumon::get_json_total_stats() {
   return cpu_stats;
 }
 
 // For CPU time there's nothing to return for an average
-std::map<std::string, unsigned long long> const cpumon::get_json_average_stats(
+nlohmann::fifo_map<std::string, unsigned long long> const cpumon::get_json_average_stats(
     unsigned long long elapsed_clock_ticks) {
-  std::map<std::string, unsigned long long> empty_average_stats{};
+  nlohmann::fifo_map<std::string, unsigned long long> empty_average_stats{};
   return empty_average_stats;
 }

@@ -70,7 +70,7 @@ void netmon::open_interface_streams() {
 
 // Read raw stat values
 void netmon::read_raw_network_stats(
-    std::map<std::string, unsigned long long>& stats) {
+    nlohmann::fifo_map<std::string, unsigned long long>& stats) {
   for (const auto& if_param : interface_params) {
     unsigned long long value_read{};
     stats[if_param] = 0;
@@ -83,8 +83,8 @@ void netmon::read_raw_network_stats(
 }
 
 // Relative counter statistics for text file
-std::map<std::string, unsigned long long> const netmon::get_text_stats() {
-  std::map<std::string, unsigned long long> text_stats{};
+nlohmann::fifo_map<std::string, unsigned long long> const netmon::get_text_stats() {
+  nlohmann::fifo_map<std::string, unsigned long long> text_stats{};
   for (const auto& if_param : interface_params) {
     text_stats[if_param] = network_stats[if_param] - network_stats_start[if_param];
   }
@@ -92,13 +92,13 @@ std::map<std::string, unsigned long long> const netmon::get_text_stats() {
 }
 
 // Also relative counters for JSON totals
-std::map<std::string, unsigned long long> const netmon::get_json_total_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const netmon::get_json_total_stats() {
   return get_text_stats();
 }
 
 // For JSON averages, divide by elapsed time
-std::map<std::string, unsigned long long> const netmon::get_json_average_stats(unsigned long long elapsed_clock_ticks) {
-  std::map<std::string, unsigned long long> json_average_stats = get_text_stats();
+nlohmann::fifo_map<std::string, unsigned long long> const netmon::get_json_average_stats(unsigned long long elapsed_clock_ticks) {
+  nlohmann::fifo_map<std::string, unsigned long long> json_average_stats = get_text_stats();
   for (auto& stat : json_average_stats) {
     stat.second = (stat.second * sysconf(_SC_CLK_TCK)) / elapsed_clock_ticks;
   }

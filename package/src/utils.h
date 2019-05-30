@@ -23,9 +23,12 @@ namespace prmon {
   const static std::vector<std::string> default_network_if_params{
       "rx_bytes", "rx_packets", "tx_bytes", "tx_packets"};
   const static std::vector<std::string> default_wall_params{"wtime"};
-  const static std::vector<std::string> default_memory_params{"vmem", "pss", "rss", "swap"};
-  const static std::vector<std::string> default_io_params{
-      "rchar", "wchar", "read_bytes", "write_bytes"};
+  const static std::vector<std::string> default_memory_params{"pss", "rss", "swap", "vmem"};
+  const static std::vector<std::string> legacy_memory_params{"vmem", "pss", "rss", "swap"};
+
+  const static std::vector<std::string> default_io_params{"rchar", "read_bytes", "wchar", "write_bytes"};
+  const static std::vector<std::string> legacy_io_params{"rchar", "wchar", "read_bytes", "write_bytes"};
+
   const static std::vector<std::string> default_count_params{"nprocs", "nthreads"};
 }
 

@@ -54,17 +54,17 @@ void countmon::update_stats(const std::vector<pid_t>& pids) {
 }
 
 // Return the counters
-std::map<std::string, unsigned long long> const countmon::get_text_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const countmon::get_text_stats() {
   return count_stats;
 }
 
 // For JSON return the peaks
-std::map<std::string, unsigned long long> const countmon::get_json_total_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const countmon::get_json_total_stats() {
   return count_peak_stats;
 }
 
 // An the averages 
-std::map<std::string, unsigned long long> const countmon::get_json_average_stats(
+nlohmann::fifo_map<std::string, unsigned long long> const countmon::get_json_average_stats(
     unsigned long long elapsed_clock_ticks) {
   return count_average_stats;
 }

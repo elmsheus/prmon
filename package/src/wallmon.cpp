@@ -71,18 +71,18 @@ unsigned long long const wallmon::get_wallclock_clock_t() {
 }
 
 // Return the summed counters
-std::map<std::string, unsigned long long> const wallmon::get_text_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const wallmon::get_text_stats() {
   return walltime_stats;
 }
 
 // Same for JSON
-std::map<std::string, unsigned long long> const wallmon::get_json_total_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const wallmon::get_json_total_stats() {
   return walltime_stats;
 }
 
 // For walltime there's nothing to return for an average
-std::map<std::string, unsigned long long> const wallmon::get_json_average_stats(
+nlohmann::fifo_map<std::string, unsigned long long> const wallmon::get_json_average_stats(
     unsigned long long elapsed_clock_ticks) {
-  std::map<std::string, unsigned long long> empty_average_stats{};
+  nlohmann::fifo_map<std::string, unsigned long long> empty_average_stats{};
   return empty_average_stats;
 }

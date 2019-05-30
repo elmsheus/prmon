@@ -18,10 +18,10 @@ class memmon final : public Imonitor {
   std::vector<std::string> mem_params;
 
   // Container for total stats
-  std::map<std::string, unsigned long long> mem_stats;
-  std::map<std::string, unsigned long long> mem_peak_stats;
-  std::map<std::string, unsigned long long> mem_average_stats;
-  std::map<std::string, unsigned long long> mem_total_stats;
+  nlohmann::fifo_map<std::string, unsigned long long> mem_stats;
+  nlohmann::fifo_map<std::string, unsigned long long> mem_peak_stats;
+  nlohmann::fifo_map<std::string, unsigned long long> mem_average_stats;
+  nlohmann::fifo_map<std::string, unsigned long long> mem_total_stats;
 
   // Counter for number of iterations
   unsigned long iterations;
@@ -29,13 +29,14 @@ class memmon final : public Imonitor {
 
  public:
   memmon();
+  memmon(const bool useLegacy);
 
   void update_stats(const std::vector<pid_t>& pids);
 
   // These are the stat getter methods which retrieve current statistics
-  std::map<std::string, unsigned long long> const get_text_stats();
-  std::map<std::string, unsigned long long> const get_json_total_stats();
-  std::map<std::string, unsigned long long> const get_json_average_stats(unsigned long long elapsed_clock_ticks);
+  nlohmann::fifo_map<std::string, unsigned long long> const get_text_stats();
+  nlohmann::fifo_map<std::string, unsigned long long> const get_json_total_stats();
+  nlohmann::fifo_map<std::string, unsigned long long> const get_json_average_stats(unsigned long long elapsed_clock_ticks);
 
 };
 

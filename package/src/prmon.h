@@ -8,4 +8,5 @@
 
 int MemoryMonitor(pid_t mpid, char* filename, char* jsonSummary,
                   unsigned int interval,
-                  const std::vector<std::string> netdevs);
+                  const std::vector<std::string> netdevs, 
+                  bool useLegacy);

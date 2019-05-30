@@ -29,13 +29,13 @@ class netmon final : public Imonitor {
   std::vector<std::string> monitored_netdevs;
 
   // Nested dictionary of network_if_streams[PARMETER][DEVICE][ISTREAM*]
-  std::map<
+  nlohmann::fifo_map<
       std::string,
       std::unordered_map<std::string, std::unique_ptr<std::ifstream>>>
       network_if_streams;
 
   // Container for stats, initial and current
-  std::map<std::string, unsigned long long> network_stats_start,
+  nlohmann::fifo_map<std::string, unsigned long long> network_stats_start,
       network_stats;
 
   // Find all network interfaces on the system
@@ -53,7 +53,7 @@ class netmon final : public Imonitor {
 
   // Internal method to read "raw" network stats
   void read_raw_network_stats(
-      std::map<std::string, unsigned long long>& values);
+      nlohmann::fifo_map<std::string, unsigned long long>& values);
 
  public:
   netmon(std::vector<std::string> netdevs);
@@ -64,9 +64,9 @@ class netmon final : public Imonitor {
   }
 
   // These are the stat getter methods which retrieve current statistics
-  std::map<std::string, unsigned long long> const get_text_stats();
-  std::map<std::string, unsigned long long> const get_json_total_stats();
-  std::map<std::string, unsigned long long> const get_json_average_stats(unsigned long long elapsed_clock_ticks);
+  nlohmann::fifo_map<std::string, unsigned long long> const get_text_stats();
+  nlohmann::fifo_map<std::string, unsigned long long> const get_json_total_stats();
+  nlohmann::fifo_map<std::string, unsigned long long> const get_json_average_stats(unsigned long long elapsed_clock_ticks);
 
 };
 

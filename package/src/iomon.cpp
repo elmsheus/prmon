@@ -13,6 +13,15 @@ iomon::iomon() : io_stats{} {
   for (const auto& io_param : prmon::default_io_params) io_stats[io_param] = 0;
 }
 
+iomon::iomon(const bool useLegacy) : io_stats{} {
+  if (useLegacy) {
+    for (const auto& io_param : prmon::legacy_io_params) io_stats[io_param] = 0;
+  } else {
+    for (const auto& io_param : prmon::default_io_params) io_stats[io_param] = 0;
+  }
+
+}
+
 void iomon::update_stats(const std::vector<pid_t>& pids) {
   std::string param{};
   unsigned long long value{};
@@ -35,19 +44,19 @@ void iomon::update_stats(const std::vector<pid_t>& pids) {
 }
 
 // Return the counters
-std::map<std::string, unsigned long long> const iomon::get_text_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const iomon::get_text_stats() {
   return io_stats;
 }
 
 // Same for JSON
-std::map<std::string, unsigned long long> const iomon::get_json_total_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const iomon::get_json_total_stats() {
   return io_stats;
 }
 
 // For JSON averages, divide by elapsed time
-std::map<std::string, unsigned long long> const iomon::get_json_average_stats(
+nlohmann::fifo_map<std::string, unsigned long long> const iomon::get_json_average_stats(
     unsigned long long elapsed_clock_ticks) {
-  std::map<std::string, unsigned long long> json_average_stats{};
+  nlohmann::fifo_map<std::string, unsigned long long> json_average_stats{};
   for (const auto& io_param : io_stats) {
     json_average_stats[io_param.first] =
         (io_param.second * sysconf(_SC_CLK_TCK)) / elapsed_clock_ticks;

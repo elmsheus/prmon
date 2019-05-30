@@ -62,7 +62,7 @@ void SignalChildHandler(int /*signal*/) {
 
 int MemoryMonitor(const pid_t mpid, const std::string filename,
                   const std::string jsonSummary, const unsigned int interval,
-                  const std::vector<std::string> netdevs) {
+                  const std::vector<std::string> netdevs, const bool useLegacy) {
   signal(SIGUSR1, SignalCallbackHandler);
   signal(SIGCHLD, SignalChildHandler);
 
@@ -71,27 +71,35 @@ int MemoryMonitor(const pid_t mpid, const std::string filename,
 
   // Number of processes and threads monitoring
   countmon count_monitor{};
-  monitors.push_back(&count_monitor);
+  if (not useLegacy) {  
+    monitors.push_back(&count_monitor);
+  }
 
   // Wall clock monitoring
   wallmon wall_monitor{};
-  monitors.push_back(&wall_monitor);
+  if (not useLegacy) {
+    monitors.push_back(&wall_monitor);
+  }
 
   // CPU monitoring
   cpumon cpu_monitor{};
-  monitors.push_back(&cpu_monitor);
+  if (not useLegacy) {  
+    monitors.push_back(&cpu_monitor);
+  }
 
   // Memory monitoring
-  memmon mem_monitor{};
+  memmon mem_monitor{useLegacy};
   monitors.push_back(&mem_monitor);
 
   // IO monitoring
-  iomon io_monitor{};
+  iomon io_monitor{useLegacy};
   monitors.push_back(&io_monitor);
 
   // Network monitoring
   netmon network_monitor{netdevs};
-  monitors.push_back(&network_monitor);
+  if (not useLegacy) {  
+    monitors.push_back(&network_monitor);
+  }
 
   int iteration = 0;
   time_t lastIteration = time(0) - interval;
@@ -222,6 +230,7 @@ int main(int argc, char* argv[]) {
 
   pid_t pid = -1;
   bool got_pid = false;
+  bool useLegacy = false;
   std::string filename{default_filename};
   std::string jsonSummary{default_json_summary};
   std::vector<std::string> netdevs{};
@@ -234,11 +243,12 @@ int main(int argc, char* argv[]) {
       {"json-summary", required_argument, NULL, 'j'},
       {"interval", required_argument, NULL, 'i'},
       {"netdev", required_argument, NULL, 'n'},
+      {"legacy", no_argument, NULL, 'l'},
       {"help", no_argument, NULL, 'h'},
       {0, 0, 0, 0}};
 
   char c;
-  while ((c = getopt_long(argc, argv, "p:f:j:i:n:h", long_options, NULL)) !=
+  while ((c = getopt_long(argc, argv, "p:f:j:i:n:lh", long_options, NULL)) !=
          -1) {
     switch (c) {
       case 'p':
@@ -256,6 +266,9 @@ int main(int argc, char* argv[]) {
         break;
       case 'n':
         netdevs.push_back(optarg);
+        break;
+      case 'l':
+        useLegacy = true;
         break;
       case 'h':
         do_help = 1;
@@ -282,6 +295,8 @@ int main(int argc, char* argv[]) {
         << default_json_summary << ")\n"
         << "[--interval, -i TIME]     Seconds between samples (default "
         << default_interval << ")\n"
+        << "[--legacy, -l]            Use the legacy format of stats files (default "
+        << useLegacy << ")\n"
         << "[--netdev, -n dev]        Network device to monitor (can be given\n"
         << "                          multiple times; default ALL devices)\n"
         << "[--] prog [arg] ...       Instead of monitoring a PID prmon will\n"
@@ -317,7 +332,7 @@ int main(int argc, char* argv[]) {
       std::cerr << "Bad PID to monitor.\n";
       return 1;
     }
-    MemoryMonitor(pid, filename, jsonSummary, interval, netdevs);
+    MemoryMonitor(pid, filename, jsonSummary, interval, netdevs, useLegacy);
   } else {
     if (child_args == argc) {
       std::cerr << "Found marker for child program to execute, but with no program argument.\n";
@@ -327,7 +342,7 @@ int main(int argc, char* argv[]) {
     if( child == 0 ) {
       execvp(argv[child_args],&argv[child_args]);
     } else if ( child > 0 ) {
-      MemoryMonitor(child, filename, jsonSummary, interval, netdevs);
+      MemoryMonitor(child, filename, jsonSummary, interval, netdevs, useLegacy);
     }
   }
 

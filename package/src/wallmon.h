@@ -20,7 +20,7 @@
 class wallmon final : public Imonitor {
  private:
   // Container for total stat
-  std::map<std::string, unsigned long long> walltime_stats;
+  nlohmann::fifo_map<std::string, unsigned long long> walltime_stats;
 
   unsigned long long start_time_clock_t, current_clock_t;
 
@@ -35,9 +35,9 @@ class wallmon final : public Imonitor {
   void update_stats(const std::vector<pid_t>& pids);
 
   // These are the stat getter methods which retrieve current statistics
-  std::map<std::string, unsigned long long> const get_text_stats();
-  std::map<std::string, unsigned long long> const get_json_total_stats();
-  std::map<std::string, unsigned long long> const get_json_average_stats(unsigned long long elapsed_clock_ticks);
+  nlohmann::fifo_map<std::string, unsigned long long> const get_text_stats();
+  nlohmann::fifo_map<std::string, unsigned long long> const get_json_total_stats();
+  nlohmann::fifo_map<std::string, unsigned long long> const get_json_average_stats(unsigned long long elapsed_clock_ticks);
 
   // Class specific method to retrieve wallclock time in clock ticks
   unsigned long long const get_wallclock_clock_t();

@@ -18,17 +18,18 @@ class iomon final : public Imonitor {
   std::vector<std::string> io_params;
 
   // Container for stats
-  std::map<std::string, unsigned long long> io_stats;
+  nlohmann::fifo_map<std::string, unsigned long long> io_stats;
 
  public:
   iomon();
+  iomon(const bool useLegacy);
 
   void update_stats(const std::vector<pid_t>& pids);
 
   // These are the stat getter methods which retrieve current statistics
-  std::map<std::string, unsigned long long> const get_text_stats();
-  std::map<std::string, unsigned long long> const get_json_total_stats();
-  std::map<std::string, unsigned long long> const get_json_average_stats(unsigned long long elapsed_clock_ticks);
+  nlohmann::fifo_map<std::string, unsigned long long> const get_text_stats();
+  nlohmann::fifo_map<std::string, unsigned long long> const get_json_total_stats();
+  nlohmann::fifo_map<std::string, unsigned long long> const get_json_average_stats(unsigned long long elapsed_clock_ticks);
 
 };
 

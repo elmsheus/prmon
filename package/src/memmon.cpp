@@ -22,6 +22,27 @@ memmon::memmon() : mem_params{prmon::default_memory_params}, iterations{0} {
   }
 }
 
+memmon::memmon(const bool useLegacy) : mem_params{prmon::default_memory_params}, iterations{0} {
+  if (useLegacy) {
+    mem_params = prmon::legacy_memory_params;
+    for (const auto& mem_param : mem_params) {
+      mem_stats[mem_param] = 0;
+      mem_peak_stats[mem_param] = 0;
+      mem_average_stats[mem_param] = 0;
+      mem_total_stats[mem_param] = 0;
+    }
+  } else {
+    mem_params = prmon::default_memory_params;
+    for (const auto& mem_param : mem_params) {
+      mem_stats[mem_param] = 0;
+      mem_peak_stats[mem_param] = 0;
+      mem_average_stats[mem_param] = 0;
+      mem_total_stats[mem_param] = 0;
+    }
+
+  }
+}
+
 void memmon::update_stats(const std::vector<pid_t>& pids) {
   for (auto& stat : mem_stats) stat.second = 0;
 
@@ -60,18 +81,18 @@ void memmon::update_stats(const std::vector<pid_t>& pids) {
 }
 
 // Return the summed counters
-std::map<std::string, unsigned long long> const memmon::get_text_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const memmon::get_text_stats() {
   return mem_stats;
 }
 
 // For JSON totals return peaks
-std::map<std::string, unsigned long long> const memmon::get_json_total_stats() {
+nlohmann::fifo_map<std::string, unsigned long long> const memmon::get_json_total_stats() {
   return mem_peak_stats;
 }
 
 // Average values are calculated already for us based on the iteration
 // count
-std::map<std::string, unsigned long long> const memmon::get_json_average_stats(
+nlohmann::fifo_map<std::string, unsigned long long> const memmon::get_json_average_stats(
     unsigned long long elapsed_clock_ticks) {
   return mem_average_stats;
 }
